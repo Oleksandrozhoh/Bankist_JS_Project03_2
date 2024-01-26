@@ -94,7 +94,7 @@ const displayMovements = function (movements, sort = false) {
         <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
-        <div class="movements__value">${mov}€</div>
+        <div class="movements__value">${mov.toFixed(2)}€</div>
       </div>
     `;
 
@@ -103,7 +103,7 @@ const displayMovements = function (movements, sort = false) {
 };
 
 const calcDisplayBalance = function (acc) {
-  acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
+  acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0).toFixed(2);
   labelBalance.textContent = `${acc.balance}€`;
 };
 
@@ -111,12 +111,12 @@ const calcDisplaySummary = function (acc) {
   const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes}€`;
+  labelSumIn.textContent = `${incomes.toFixed(2)}€`;
 
   const out = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(out)}€`;
+  labelSumOut.textContent = `${Math.abs(out).toFixed(2)}€`;
 
   const interest = acc.movements
     .filter(mov => mov > 0)
@@ -126,7 +126,7 @@ const calcDisplaySummary = function (acc) {
       return int >= 1;
     })
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `${interest}€`;
+  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
 };
 
 const createUsernames = function (accs) {
@@ -206,7 +206,7 @@ btnTransfer.addEventListener('click', function (e) {
 btnLoan.addEventListener('click', function (e) {
   e.preventDefault();
 
-  const amount = Number(inputLoanAmount.value);
+  const amount = Math.floor(inputLoanAmount.value);
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
     // Add movement
@@ -303,3 +303,49 @@ console.log((2.653).toFixed(0));
 console.log((2.653).toFixed(1));
 console.log((2.653).toFixed(2));
 console.log((2.653).toFixed(3));
+
+// changing the color of every second row in the movements section
+labelBalance.addEventListener('click', function (e) {
+  e.preventDefault();
+  const allRows = [...document.querySelectorAll('.movements__row')];
+  console.log(allRows);
+  allRows.forEach((cur, i) => {
+    if (i % 2 === 0) {
+      cur.style.backgroundColor = 'rgba(50, 170, 168, 0.1)';
+    }
+  });
+});
+
+// biggest number JS can store
+
+console.log(2 ** 53 - 1); // 53 == number of bits
+console.log(Number.MAX_SAFE_INTEGER);
+
+console.log(32985923853948503487); // not a safe number
+console.log(32985923853948503487n); // bigInt type - allowes to store numbers > Max_safe_number
+
+// Date time
+// create using constructor
+const now = new Date();
+console.log(now);
+
+// parce from string
+console.log(new Date('2/11/2020'));
+
+// month is zero based
+console.log(new Date(2020, 1, 1));
+
+// miliceconds after initial unix time
+console.log(new Date(0));
+console.log(new Date(366 * 24 * 60 * 60 * 1000));
+
+console.log(now.getFullYear());
+console.log(now.getMonth());
+console.log(now.getDate());
+console.log(now.getDay());
+console.log(now.getHours());
+console.log(now.getMinutes());
+console.log(now.getSeconds());
+console.log(now.toISOString());
+console.log(now.toDateString());
+console.log(now.getTime());
