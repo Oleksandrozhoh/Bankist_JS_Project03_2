@@ -85,16 +85,13 @@ const daysPassed = function (date1, date2) {
   return Math.round(Math.abs((date1 - date2) / 1000 / 60 / 60 / 24));
 };
 
-const formatMovmentDate = function (date) {
+const formatMovmentDate = function (date, locale) {
   if (new Date().getDate() === date.getDate()) return 'today';
   if (new Date().getDate() - 1 === date.getDate()) return 'yesterday';
   if (daysPassed(new Date(), date) <= 5)
     return `${daysPassed(new Date(), date)} days ago`;
 
-  const day = `${date.getDate()}`.padStart(2, 0);
-  const month = `${date.getMonth() + 1}`.padStart(2, 0);
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
+  return new Intl.DateTimeFormat(locale).format(date);
 };
 
 const displayMovements = function (acc, sort = false) {
@@ -108,7 +105,7 @@ const displayMovements = function (acc, sort = false) {
     const date = new Date(acc.movementsDates[i]);
     // if ( daysPassed(new Date(), date)<1)
 
-    const dateStr = formatMovmentDate(date);
+    const dateStr = formatMovmentDate(date, acc.locale);
 
     const html = `
       <div class="movements__row">
@@ -201,12 +198,23 @@ btnLogin.addEventListener('click', function (e) {
 
     // Current date
     const now = new Date();
-    const day = `${now.getDate()}`.padStart(2, 0);
-    const month = `${now.getMonth() + 1}`.padStart(2, 0);
-    const year = now.getFullYear();
-    const hours = `${now.getHours()}`.padStart(2, 0);
-    const mins = `${now.getMinutes()}`.padStart(2, 0);
-    labelDate.textContent = `${day}/${month}/${year}, ${hours}:${mins}`;
+    const options = {
+      day: 'numeric',
+      month: '2-digit',
+      year: 'numeric',
+      minute: 'numeric',
+      hour: 'numeric',
+    };
+    labelDate.textContent = new Intl.DateTimeFormat(
+      `${currentAccount.locale}`,
+      options
+    ).format(now);
+    // const day = `${now.getDate()}`.padStart(2, 0);
+    // const month = `${now.getMonth() + 1}`.padStart(2, 0);
+    // const year = now.getFullYear();
+    // const hours = `${now.getHours()}`.padStart(2, 0);
+    // const mins = `${now.getMinutes()}`.padStart(2, 0);
+    // labelDate.textContent = `${day}/${month}/${year}, ${hours}:${mins}`;
 
     // Clear input fields
     inputLoginUsername.value = inputLoginPin.value = '';
