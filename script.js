@@ -85,6 +85,13 @@ const daysPassed = function (date1, date2) {
   return Math.round(Math.abs((date1 - date2) / 1000 / 60 / 60 / 24));
 };
 
+const formatCur = function (number, locale, cur) {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: `${cur}`,
+  }).format(number);
+};
+
 const formatMovmentDate = function (date, locale) {
   if (new Date().getDate() === date.getDate()) return 'today';
   if (new Date().getDate() - 1 === date.getDate()) return 'yesterday';
@@ -107,13 +114,15 @@ const displayMovements = function (acc, sort = false) {
 
     const dateStr = formatMovmentDate(date, acc.locale);
 
+    const formatedMov = formatCur(mov, acc.locale, acc.currency);
+
     const html = `
       <div class="movements__row">
         <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
         <div class="movements__date">${dateStr}</div>
-        <div class="movements__value">${mov.toFixed(2)}€</div>
+        <div class="movements__value">${formatedMov}</div>
       </div>
     `;
 
@@ -123,19 +132,22 @@ const displayMovements = function (acc, sort = false) {
 
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0).toFixed(2);
-  labelBalance.textContent = `${acc.balance}€`;
+  const formatedBalance = formatCur(acc.balance, acc.locale, acc.currency);
+  labelBalance.textContent = formatedBalance;
 };
 
 const calcDisplaySummary = function (acc) {
   const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes.toFixed(2)}€`;
+  const formatedIncomes = formatCur(incomes, acc.locale, acc.currency);
+  labelSumIn.textContent = formatedIncomes;
 
   const out = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(out).toFixed(2)}€`;
+  const formatedOut = formatCur(out, acc.locale, acc.currency);
+  labelSumOut.textContent = formatedOut;
 
   const interest = acc.movements
     .filter(mov => mov > 0)
@@ -145,7 +157,8 @@ const calcDisplaySummary = function (acc) {
       return int >= 1;
     })
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
+  const formatedInterest = formatCur(interest, acc.locale, acc.currency);
+  labelSumInterest.textContent = formatedInterest;
 };
 
 const createUsernames = function (accs) {
@@ -406,3 +419,14 @@ const future = new Date(2040, 1, 1);
 console.log(Math.trunc((future - now1) / 1000 / 60 / 60 / 24 / 365));
 
 console.log(daysPassed(future, now1));
+
+// will pull iso code from the browser
+console.log(navigator.language);
+
+const number = 2353254.23;
+console.log(Intl.NumberFormat(navigator.language).format(number));
+const options = {
+  style: 'unit',
+  unit: 'mile-per-hour',
+};
+console.log(Intl.NumberFormat(navigator.language, options).format(number));
