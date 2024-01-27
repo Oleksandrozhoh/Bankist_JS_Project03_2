@@ -187,10 +187,10 @@ const updateUI = function (acc) {
 // Event handlers
 let currentAccount;
 
-/// WIP fake always logged in
-currentAccount = account1;
-updateUI(currentAccount);
-containerApp.style.opacity = 100;
+// /// WIP fake always logged in
+// currentAccount = account1;
+// updateUI(currentAccount);
+// containerApp.style.opacity = 100;
 
 // LOGIN
 btnLogin.addEventListener('click', function (e) {
@@ -269,12 +269,14 @@ btnLoan.addEventListener('click', function (e) {
   const amount = Math.floor(inputLoanAmount.value);
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
-    // Add movement
-    currentAccount.movements.push(amount);
-    currentAccount.movementsDates.push(new Date().toISOString());
-    console.log(currentAccount);
-    // Update UI
-    updateUI(currentAccount);
+    setTimeout(() => {
+      // Add movement
+      currentAccount.movements.push(amount);
+      currentAccount.movementsDates.push(new Date().toISOString());
+      console.log(currentAccount);
+      // Update UI
+      updateUI(currentAccount);
+    }, 3000);
   }
   inputLoanAmount.value = '';
 });
@@ -430,3 +432,21 @@ const options = {
   unit: 'mile-per-hour',
 };
 console.log(Intl.NumberFormat(navigator.language, options).format(number));
+
+//TIMERS
+
+const waitTimer = setTimeout(
+  time => console.log(`${time} has passed`),
+  5000,
+  '5 seconds'
+);
+console.log('time has not passed yet');
+clearTimeout(waitTimer);
+
+// const dateTimer = setInterval(function () {
+//   const date = new Date();
+//   const hours = date.getHours();
+//   const mins = date.getMinutes();
+//   const seconds = date.getSeconds();
+//   console.log(`${hours}:${mins}:${seconds}`);
+// }, 1000);
