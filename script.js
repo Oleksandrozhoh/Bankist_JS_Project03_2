@@ -80,6 +80,36 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 /////////////////////////////////////////////////
 // Functions
+const startLogOutTimer = function () {
+  // tick will be a separate function because we want to call it before calling it from setInterval method in order to skip the interwal metod delay
+  const tick = function () {
+    // set time to 5 mins
+    let mins = Math.trunc(time / 60)
+      .toString()
+      .padStart(2, 0);
+    let secs = (time % 60).toString().padStart(2, 0);
+
+    // assign time to timer label
+    labelTimer.textContent = `${mins}:${secs}`;
+
+    // if time is 0:00 = log out user
+    if (time === 0) {
+      clearInterval(startLogOutTimer);
+      // Display UI and message
+      labelWelcome.textContent = 'Log in to get started';
+      containerApp.style.opacity = 0;
+    }
+
+    // decrease 1 sec
+    time--;
+  };
+
+  let time = 300;
+  // call timer every second
+  tick();
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
 
 const daysPassed = function (date1, date2) {
   return Math.round(Math.abs((date1 - date2) / 1000 / 60 / 60 / 24));
@@ -185,7 +215,7 @@ const updateUI = function (acc) {
 
 ///////////////////////////////////////
 // Event handlers
-let currentAccount;
+let currentAccount, timer;
 
 // /// WIP fake always logged in
 // currentAccount = account1;
@@ -208,6 +238,9 @@ btnLogin.addEventListener('click', function (e) {
       currentAccount.owner.split(' ')[0]
     }`;
     containerApp.style.opacity = 100;
+
+    if (timer) clearInterval(timer);
+    timer = startLogOutTimer();
 
     // Current date
     const now = new Date();
@@ -260,6 +293,8 @@ btnTransfer.addEventListener('click', function (e) {
     // Update UI
     updateUI(currentAccount);
   }
+  clearInterval(timer);
+  timer = startLogOutTimer();
 });
 
 // LOAN
@@ -279,6 +314,8 @@ btnLoan.addEventListener('click', function (e) {
     }, 3000);
   }
   inputLoanAmount.value = '';
+  clearInterval(timer);
+  timer = startLogOutTimer();
 });
 
 btnClose.addEventListener('click', function (e) {
